@@ -11,7 +11,6 @@ class CheckBoxImage extends Component {
         this.handleClick = this.handleClick.bind(this)
         this.state = {
             title: '',
-            description: '',
             tag: '',
             selected_urls: []
         }
@@ -20,9 +19,9 @@ class CheckBoxImage extends Component {
 
     handleClick(link, tag) {
         this.state.selected_urls.push({ url: link })
-        this.setState({
-            tag
-        })
+        // this.setState({
+        //     tag
+        // })
     }
 
     handleChange = (e) => {
@@ -36,7 +35,6 @@ class CheckBoxImage extends Component {
         this.props.addStoryQuery({
             variables: {
                 title: this.state.title,
-                description: this.state.description,
                 tags: this.state.tag,
                 subStory: this.state.selected_urls
             }
@@ -78,9 +76,9 @@ class CheckBoxImage extends Component {
                         onChange={e => this.handleChange(e)} />
                     <br /><br />
                     <input
-                        name='description'
-                        value={this.state.description}
-                        placeholder='Enter Description'
+                        name='tag'
+                        value={this.state.tag}
+                        placeholder='Enter Image Tag'
                         onChange={e => this.handleChange(e)} />
                 </form>
                 <button className="heading" onClick={(e) => { this.onSubmit(e) }}>CREATE STORY</button>

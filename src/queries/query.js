@@ -23,6 +23,18 @@ const getStoryQuery = gql`
   }
 }
 `
+
+const getStoryForTag = gql`
+query GetStoryForTag($tag: String!){
+  StoryFeed(tag: $tag){
+    title
+    id
+    subStory{
+      url
+    }
+  }
+}
+`
 const getVideoQuery = gql`
 query GetVideo($query : String!,$limit:Int!){
     VideoFeed(query: $query , limit : $limit){
@@ -46,8 +58,8 @@ query GetNews($query : String! , $limit : Int!){
 }
 `
 const addStoryQuery = gql`
-mutation($title: String! , $description: String!,$tags: String!,$subStory:[CreateUserInput]!){
-  addStory(title: $title,description: $description,tags:$tags,subStory: $subStory){
+mutation($title: String! ,$tags: String!,$subStory:[CreateUserInput]!){
+  addStory(title: $title,tags:$tags,subStory: $subStory){
     title
   }
 }
@@ -59,5 +71,6 @@ export {
   addStoryQuery2,
   getStoryQuery,
   getVideoQuery,
-  getNewsQuery
+  getNewsQuery,
+  getStoryForTag
 }

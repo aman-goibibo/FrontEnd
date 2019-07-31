@@ -10,6 +10,7 @@ class DashBoard extends Component {
             urls: [],
             showImages: false
         };
+        console.log(this.props)
     }
 
     handleChange = (e) => {

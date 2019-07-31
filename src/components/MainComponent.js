@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import ReactSearchBox from 'react-search-box'
-import { graphql, compose, Query } from 'react-apollo'
+import { graphql, compose } from 'react-apollo'
 import StoryTemplate from './StoryTemplate'
-import { getStoryQuery, getVideoQuery, getNewsQuery } from '../queries/query'
+import { getStoryQuery, getVideoQuery, getNewsQuery, getStoryForTag } from '../queries/query'
 import ReactYoutubeCard from './ReactYoutubeCard'
 import NewsCard from './NewsCard';
+// import { Route , Link } from 'react-router-dom';
 
-var state_value = 'Bangalore';
+
+var state_value = '';
 
 const data = [
     {
@@ -14,49 +16,44 @@ const data = [
         value: 'Bangalore',
     },
     {
-        key: 'Delhi',
-        value: 'Delhi',
+        key: 'Goa',
+        value: 'Goa',
     },
 ];
 
 class MainComponent extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            value: 'Bangalore'
-        }
+    
 
-        this.handleSearchChange = this.handleSearchChange.bind(this)
+        // this.handleSearchChange = this.handleSearchChange.bind(this)
+            // state_value = this.props.city.city;
+            console.log("Props to Main " ,this.props.city)
+
     }
 
     handleSearchChange = (e) => {
         this.setState({
             value: e.value
         })
-        // console.log(this.props.getVideoQuery)
-        // use the Mutations
-        //  getVideoQuery({
-        //     variables: {
-        //         query: this.state.value
-        //     },
-        //     // refetchQueries: [{ query: getVideoQuery }]
-        // });
-        // this.props.getVideoQuery({
-        //     variables: {
-        //         query: 'aman',
-        //         limit: 1,
-        //     }
-        // })
-        // this.props.value = this.state.value;
-       setTimeout(() => { state_value = this.state.value},1000)
+
+        // setTimeout(() => { state_value = this.state.value;this.displayStory() }, 1000)
+        // this.getVideos();
+        // this.displayStory();
+        state_value = e.value;
+        // <Link to="/dashboard" ></Link>
+        var push_link = '/?city=' + e.value
+        this.props.history.push(push_link);
+
+
     }
 
     displayStory() {
-        var data = this.props.getStoryQuery;
+        var data = this.props.getStoryForTag;
         if (data.loading) {
             return (<div>Loading Stories . . .</div>)
         } else {
-            return data.allStories.map(story => {
+            return data.StoryFeed.map(story => {
                 return (
                     <div id="card--content" key={story.id}>
                         <StoryTemplate key={story.id} storyTitle={story.title} subStory={story.subStory} />
@@ -68,17 +65,7 @@ class MainComponent extends Component {
     }
 
     getVideos() {
-        // console.log("I am called");
-        // <Query query={getVideoQuery} variables={{ query: 'Delhi', limit: 2 }}>
-        //     {({ data, loading, error }) => {
-        //         console.log("I am in")
-        //         console.log(data)
 
-              
-
-        //     }}
-        // </Query>
-        // console.log(this.props)
         var data = this.props.getVideoQuery;
 
         if (data.loading) {
@@ -88,7 +75,7 @@ class MainComponent extends Component {
         } else {
             return data.VideoFeed.map(video => {
                 return (
-                    <ReactYoutubeCard videoId={video.videoId} key={video.videoId}/>
+                    <ReactYoutubeCard videoId={video.videoId} key={video.videoId} />
                 )
             }
             )
@@ -110,18 +97,30 @@ class MainComponent extends Component {
         }
     }
 
+    componentDidUpdate(prevProps) {
+        // if (prevProps.city.city != this.props.city.city) {
+        //     state_value = this.props.city.city;
+
+        //     this.props.getStoryForTag.refetch()
+        // }
+
+        console.log("Main Update" , this.props.city)
+            this.props.getStoryForTag.refetch()
+
+    }
+
 
 
     render() {
         return (
             <div>
-                <ReactSearchBox
+                {/* <ReactSearchBox
                     placeholder="Discover Incredible Places"
                     value="Doe"
                     data={data}
                     inputBoxBorderColor="black"
                     onSelect={e => this.handleSearchChange(e)}
-                />
+                /> */}
 
                 {/* STORY COMP */}
                 <div className="heading-div">
@@ -162,17 +161,39 @@ class MainComponent extends Component {
 
 export default compose(
     graphql(getStoryQuery, { name: "getStoryQuery" }),
+    graphql(getStoryForTag, {
+        name: "getStoryForTag",
+        options: (props) => {
+            var q = '';
+            if (props.city == 'bangalore' || props.city == 'Bangalore') {
+                q = 'Bangalore'
+            }
+            else {
+                q = 'Goa'
+            }
+            console.log("tag " , q)
+            return {
+                variables: {
+                    tag: q
+                },
+                fetchPolicy: 'no-cache'
+                
+            }
+        }
+    }),
     graphql(getVideoQuery, {
         name: "getVideoQuery",
         options: (props) => {
+
             return {
                 variables: {
-                    query: 'Bangalore Travel Vlog',
+                    query : props.city + 'Travel Vlogs',
                     limit: 2
                 }
             }
         }
     }),
+
     graphql(getNewsQuery, {
         name: "getNewsQuery",
         options: (props) => {

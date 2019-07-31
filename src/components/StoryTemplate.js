@@ -42,7 +42,7 @@ class StoryTemplate extends Component {
             var obj = {};
             obj["url"] = story.subStory[i].url;
             var obj2 = {};
-            obj2["heading"] = story.subStory[i].title;
+            obj2["heading"] = story.storyTitle;
             obj["header"] = obj2;
             stories.push(obj);
         }
